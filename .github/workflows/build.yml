@@ -25,17 +25,18 @@ jobs:
 
       - name: Apni files copy karo
         run: |
+          S=.github/workflows
           rm -rf test
-          cp app_pubspec.yaml pubspec.yaml
-          cp main.dart lib/main.dart
+          cp $S/app_pubspec.txt pubspec.yaml
+          cp $S/main.dart lib/main.dart
           KDIR=$(dirname $(find android/app/src/main -name MainActivity.kt | head -n 1))
           echo "Kotlin folder: $KDIR"
-          cp MainActivity.kt "$KDIR/MainActivity.kt"
-          cp GuardService.kt "$KDIR/GuardService.kt"
-          cp AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          cp $S/MainActivity.kt "$KDIR/MainActivity.kt"
+          cp $S/GuardService.kt "$KDIR/GuardService.kt"
+          cp $S/AndroidManifest.xml android/app/src/main/AndroidManifest.xml
           mkdir -p android/app/src/main/res/xml android/app/src/main/res/values
-          cp guard_config.xml android/app/src/main/res/xml/guard_config.xml
-          cp guard_strings.xml android/app/src/main/res/values/guard_strings.xml
+          cp $S/guard_config.xml android/app/src/main/res/xml/guard_config.xml
+          cp $S/guard_strings.xml android/app/src/main/res/values/guard_strings.xml
 
       - run: flutter pub get
 
