@@ -1,0 +1,47 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Flutter project scaffold banao
+        run: flutter create --org com.studyblocker --project-name study_blocker --platforms=android .
+
+      - name: Apni files copy karo
+        run: |
+          rm -rf test
+          cp app_pubspec.yaml pubspec.yaml
+          cp main.dart lib/main.dart
+          KDIR=$(dirname $(find android/app/src/main -name MainActivity.kt | head -n 1))
+          echo "Kotlin folder: $KDIR"
+          cp MainActivity.kt "$KDIR/MainActivity.kt"
+          cp GuardService.kt "$KDIR/GuardService.kt"
+          cp AndroidManifest.xml android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main/res/xml android/app/src/main/res/values
+          cp guard_config.xml android/app/src/main/res/xml/guard_config.xml
+          cp guard_strings.xml android/app/src/main/res/values/guard_strings.xml
+
+      - run: flutter pub get
+
+      - run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: study-blocker-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
